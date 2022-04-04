@@ -1,7 +1,7 @@
 from maya import cmds
 from maya import mel
 
-alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -uvWrite -worldSpace -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
+alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -attr animatedAsset -uvWrite -worldSpace -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
 
 def export_setdress():
     """Export Selection
@@ -127,12 +127,37 @@ class SetDressTools:
             
             self.addStringAttribute(transformShape, 'assetType', assetType)
 
+            if(len(self.getControllers(transform)) > 2):
+                animatedAsset = True
+            else:
+                animatedAsset = False
+
+            self.addIntAttribute(transformShape, 'animatedAsset', int(animatedAsset))
+
             # ----[DEBUG]-----
             # print(transform)
             # print(assetName)
             # print(assetInstance)
             # print(assetType)
+            # print(int(animatedAsset))
             # ----[DEBUG]-----
+
+    def getControllers(self, obj):
+        """Get the list of controllers for a given object.
+
+        Args:
+            obj (str): Name of the object.
+
+        Returns:
+            list: Controllers
+        """
+        controllers = [
+            obj for obj in cmds.listRelatives(obj, allDescendents=True) if not "Shape" in obj
+        ]
+
+        return [
+            obj for obj in controllers if not "GRP" in obj
+        ]
 
     def checkTransform(self, obj):
         """ Check if the object local position has moved.
@@ -159,19 +184,23 @@ class SetDressTools:
     def exportTransformsABC(self):
         """ Export the transform list to alembic file.
         """
-        print(len(cmds.ls(sl=True)))
-        print(len(self.srtGlobals))
+        # print(len(cmds.ls(sl=True)))
+        # print(len(self.srtGlobals))
 
         alembicCmd  = alembicBaseCommand.replace('<startFrame>', str(self.startFrame))
         alembicCmd  = alembicCmd.replace('<endFrame>', str(self.endFrame))
         alembicCmd  = alembicCmd.replace('<objectList>', " -root ".join(self.srtGlobals))
         alembicCmd  = alembicCmd.replace('<filePath>', self.alembicFileName)
 
-        print(alembicCmd)
+        # print(alembicCmd)
 
         return_message = mel.eval(alembicCmd)
-        print("ABCExport2 return:")
-        print(return_message)
+        # print("ABCExport2 return:")
+        # print(return_message)
+    
+    def exportAnimatedMeshes(self):
+        for elem in self.srtGlobals:
+            print(elem)
 
     def export(self, startFrame, endFrame, filePath):
         """ Export the pivot of the selected references in an alembic file.
