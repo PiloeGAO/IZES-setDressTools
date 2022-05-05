@@ -1,7 +1,7 @@
 from maya import cmds
 from maya import mel
 
-alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -attr animatedAsset -uvWrite -worldSpace -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
+alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -attr animatedAsset -uvWrite -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
 
 def export_setdress():
     """Export Selection
