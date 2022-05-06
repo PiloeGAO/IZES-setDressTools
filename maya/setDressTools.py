@@ -202,7 +202,7 @@ class SetDressTools:
         for elem in self.srtGlobals:
             print(elem)
 
-    def export(self, startFrame, endFrame, filePath):
+    def export(self, startFrame, endFrame, filePath, objects=None):
         """ Export the pivot of the selected references in an alembic file.
         """
 
@@ -210,8 +210,10 @@ class SetDressTools:
         self.endFrame           = endFrame
         self.alembicFileName    = filePath
 
+        if(objects == None): objects = cmds.ls(sl=True)
+
         # Loop over the selected reference to export.
-        for ref in cmds.ls(sl=True):
+        for ref in objects:
             # Get the nameSpace.
             splitName = ref.split(":")
             nameSpace = splitName[0]
