@@ -1,7 +1,7 @@
 from maya import cmds
 from maya import mel
 
-alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -attr animatedAsset -uvWrite -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
+alembicBaseCommand = 'AbcExport2 -j "-frameRange <startFrame> <endFrame> -attr assetName -attr assetInstance -attr mayaReferencePath -attr assetType -uvWrite -writeUVSets -dataFormat ogawa -root <objectList> -file <filePath>"'
 
 def export_setdress():
     """Export Selection
@@ -40,9 +40,9 @@ class SetDressTools:
         """
         splitHierarchy  = objLongName.split("|")
         splitObjectName = splitHierarchy[1].split(":")
-        splitNameSpace  = splitObjectName[0].split("_")
+        splitNameSpace  = ":".join(splitObjectName[:len(splitObjectName)-1]).split("_")
 
-        assetName       = "_".join(splitNameSpace[0:-1])
+        assetName = splitObjectName[-1]
         assetInstance   = int(splitNameSpace[-1])
 
         return assetName, assetInstance
@@ -127,13 +127,6 @@ class SetDressTools:
             
             self.addStringAttribute(transformShape, 'assetType', assetType)
 
-            if(len(self.getControllers(transform)) > 2):
-                animatedAsset = True
-            else:
-                animatedAsset = False
-
-            self.addIntAttribute(transformShape, 'animatedAsset', int(animatedAsset))
-
             # ----[DEBUG]-----
             # print(transform)
             # print(assetName)
@@ -216,7 +209,7 @@ class SetDressTools:
         for ref in objects:
             # Get the nameSpace.
             splitName = ref.split(":")
-            nameSpace = splitName[0]
+            nameSpace = ":".join(splitName[:len(splitName)-1])
             # Get the srt global and srt local.
             srtGlobal 	= "%s:main_SRT_global" % nameSpace
             srtLocal	= "%s:main_SRT_local" % nameSpace
