@@ -322,7 +322,7 @@ class ImportSetDress:
                     "materials" : []
                 }
 
-                for matID in range(1, int(child.node('material1').parm('num_materials').evalAsString())):
+                for matID in range(1, 1+int(child.node('material1').parm('num_materials').evalAsString())):
                     datas["materials"].append(
                         {
                             "paths" : child.node('material1').parm(f'group{matID}').evalAsString(),
